@@ -96,8 +96,8 @@
     if (monthly) {
       formatted = `
         <h3 class="title is-2">Monthly take home pay: \$${res.take_home.toFixed(2)} </h3>
-        CPF paid: ${res.cpf_paid.toFixed(2)}<br/>
-        Tax paid: ${res.tax_paid.toFixed(2)}<br/>
+        CPF paid: \$${res.cpf_paid.toFixed(2)}<br/>
+        Tax paid: \$${res.tax_paid.toFixed(2)}<br/>
         Effective tax rate: ${(res.effective_tax*100).toFixed(2)}%<br/>
         Effective tax + CPF rate: ${(res.effective*100).toFixed(2)}%<br/>
         Employer contribution to CPF: \$${res.cpf.employer.toFixed(2)}<br/>
@@ -107,8 +107,8 @@
     } else {
       formatted = `
         <h3 class="title is-2">Yearly take home pay: \$${(res.take_home*12).toFixed(2)} </h3>
-        CPF paid: ${(res.cpf_paid*12).toFixed(2)}<br/>
-        Tax paid: ${(res.tax_paid*12).toFixed(2)}<br/>
+        CPF paid: \$${(res.cpf_paid*12).toFixed(2)}<br/>
+        Tax paid: \$${(res.tax_paid*12).toFixed(2)}<br/>
         Effective tax rate: ${(res.effective_tax*100).toFixed(2)}%<br/>
         Effective tax + CPF rate: ${(res.effective*100).toFixed(2)}%<br/>
         Employer contribution to CPF: \$${(res.cpf.employer*12).toFixed(2)}<br/>
