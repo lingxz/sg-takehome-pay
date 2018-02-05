@@ -55,6 +55,9 @@ function incomeTax(salary, age) {
         }
         tax += tax_brackets[i] * tax_pct[i]/100;
     }
+    if (annual > cumulative[-1]) {
+        tax += (annual - cumulative[-1])*tax_pct[-1]
+    }
     return tax/12.
 }
 
@@ -88,7 +91,7 @@ function CPF(salary, age, additional_wage) {
     employee_aw = aw_cpfed*c.employee_contrib;
     employer_aw = aw_cpfed*c.employer_contrib;
 
-    const total_cpf_inflow = employee + employer + employee_aw + employer_aw;
+    const total_cpf_inflow = (employee + employer)*12 + employee_aw + employer_aw;
     if (total_cpf_inflow > c.cpf_annual_limit) {
         throw "something is wrong! CPF exceeded the annual limit!"
     }
@@ -99,7 +102,7 @@ function CPF(salary, age, additional_wage) {
         employee_aw: employee_aw,
         employer_aw: employer_aw,
         possible_voluntary: c.cpf_annual_limit - total_cpf_inflow,
-        total_cpf_inflow: total_cpf_inflow,
+        total_cpf_inflow: total_cpf_inflow/12,
     }
 }
 

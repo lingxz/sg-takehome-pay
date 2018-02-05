@@ -1,1 +1,1 @@
-Calculating how much the government takes away
+Calculating how much the gahmen takes away
