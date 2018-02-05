@@ -38,7 +38,8 @@
     <p class="subtitle">Calculating how much money the gahmen takes from you.</p>
 
     <form id="mainform">
-      <label class="label">Salary (monthly)</label>
+      <label class="label" id="monthly-label">Salary (monthly) <a id="to-year">switch to yearly view</a></label>
+      <label class="label" id="yearly-label">Salary (yearly) <a id="to-month">switch to monthly view</a></label>
       <input class="input" style="font-family: monospace;" type="number" placeholder="$$$" id='salary' required>
       <input style="margin-top: 10px;font-family: monospace" class="button is-primary" type="submit" value="Calculate!">
     </form>
@@ -52,26 +53,69 @@
   crossorigin="anonymous"></script>
 <script src="script.js"></script>
 <script>
+
+  let monthly = true;
+  $(document).ready(function() {
+    refreshYearMonthLabels();
+    $("#to-month").click(function() {
+      monthly = true;
+      refreshYearMonthLabels();
+    });
+    $("#to-year").click(function() {
+      monthly = false;
+      refreshYearMonthLabels();
+    });
+  })
+
+  function refreshYearMonthLabels() {
+    if (monthly) {
+      $("#monthly-label").show();
+      $("#yearly-label").hide();
+    } else {
+      $("#yearly-label").show();
+      $("#monthly-label").hide();
+    }
+  }
+
   $('#mainform').submit(() => {
     const input_sal = $('#salary').val();
     const sal = parseInt(input_sal);
-    const res = getPay(sal);
+    var res;
+    if (monthly) {
+      res = getPay(sal);
+    } else {
+      res = getPay(sal/12)
+    }
     const formatted = format_res(res);
     $("div#result").html(formatted);
     return false;
   })
 
   function format_res(res) {
-    const formatted = `
-      <h3 class="title is-2">Take home pay: \$${res.take_home.toFixed(2)} </h3>
-      CPF paid: ${res.cpf_paid.toFixed(2)}<br/>
-      Tax paid: ${res.tax_paid.toFixed(2)}<br/>
-      Effective tax rate: ${(res.effective_tax*100).toFixed(2)}%<br/>
-      Effective tax + CPF rate: ${(res.effective*100).toFixed(2)}%<br/>
-      Employer contribution to CPF: \$${res.cpf.employer.toFixed(2)}<br/>
-      <br/>
-      You can voluntarily contribute <b>\$${res.cpf.possible_voluntary.toFixed(2)}</b> more to your CPF this year (but who wants to do that?)<br/>
-    `;
+    var formatted;
+    if (monthly) {
+      formatted = `
+        <h3 class="title is-2">Monthly take home pay: \$${res.take_home.toFixed(2)} </h3>
+        CPF paid: ${res.cpf_paid.toFixed(2)}<br/>
+        Tax paid: ${res.tax_paid.toFixed(2)}<br/>
+        Effective tax rate: ${(res.effective_tax*100).toFixed(2)}%<br/>
+        Effective tax + CPF rate: ${(res.effective*100).toFixed(2)}%<br/>
+        Employer contribution to CPF: \$${res.cpf.employer.toFixed(2)}<br/>
+        <br/>
+        You can voluntarily contribute <b>\$${res.cpf.possible_voluntary.toFixed(2)}</b> more to your CPF this year (but who wants to do that?)<br/>
+      `;
+    } else {
+      formatted = `
+        <h3 class="title is-2">Yearly take home pay: \$${(res.take_home*12).toFixed(2)} </h3>
+        CPF paid: ${(res.cpf_paid*12).toFixed(2)}<br/>
+        Tax paid: ${(res.tax_paid*12).toFixed(2)}<br/>
+        Effective tax rate: ${(res.effective_tax*100).toFixed(2)}%<br/>
+        Effective tax + CPF rate: ${(res.effective*100).toFixed(2)}%<br/>
+        Employer contribution to CPF: \$${(res.cpf.employer*12).toFixed(2)}<br/>
+        <br/>
+        You can voluntarily contribute <b>\$${res.cpf.possible_voluntary.toFixed(2)}</b> more to your CPF this year (but who wants to do that?)<br/>
+      `;
+    }
     return formatted
   }
 
