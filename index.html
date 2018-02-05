@@ -1,0 +1,75 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>No Money</title>
+  <meta name="description" content="Calculating how much the government takes away">
+  <meta name="author" content="SitePoint">
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css" />
+    <style>
+      #main {
+        margin-top: 1em;
+        max-width: 700px;
+        margin: 0 auto;
+      }
+      #result {
+        margin-top: 1em;
+        font-size: 1.2em;
+      }
+    </style>
+  <!--[if lt IE 9]>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.js"></script>
+  <![endif]-->
+</head>
+
+<body>
+
+
+<div id='main'>
+  <section class="section">
+    <h1 class="title">Where did all the money go?</h1>
+    <p class="subtitle">Calculating how much money the government takes from you.</p>
+
+    <form id="mainform">
+      <label class="label">Salary (monthly)</label>
+      <input class="input" type="number" placeholder="$$$" id='salary' required>
+      <input style="margin-top: 10px" class="button is-primary" type="submit" value="Submit">
+    </form>
+    <div id="result"></div>
+  </section>
+</div>
+
+<script
+  src="http://code.jquery.com/jquery-3.3.1.slim.min.js"
+  integrity="sha256-3edrmyuQ0w65f8gfBsqowzjJe2iM6n0nKciPUp8y+7E="
+  crossorigin="anonymous"></script>
+<script src="script.js"></script>
+<script>
+  $('#mainform').submit(() => {
+    const input_sal = $('#salary').val();
+    const sal = parseInt(input_sal);
+    const res = getPay(sal);
+    const formatted = format_res(res);
+    $("div#result").html(formatted);
+    return false;
+  })
+
+  function format_res(res) {
+    const formatted = `
+      <h3 class="title is-2">Take home pay: \$${res.take_home.toFixed(2)} </h3>
+      CPF paid: ${res.cpf_paid.toFixed(2)} <br/>
+      Tax paid: ${res.tax_paid.toFixed(2)} <br/>
+      Effective tax rate: ${(res.effective_tax*100).toFixed(2)}% <br/>
+      Effective tax + CPF rate: ${(res.effective*100).toFixed(2)}% <br/>
+    `;
+    console.log(formatted);
+    return formatted
+  }
+
+</script>
+</body>
+</html>

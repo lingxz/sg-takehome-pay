@@ -1,0 +1,1 @@
+Calculating how much the government takes away
