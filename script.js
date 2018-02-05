@@ -55,8 +55,8 @@ function incomeTax(salary, age) {
         }
         tax += tax_brackets[i] * tax_pct[i]/100;
     }
-    if (annual > cumulative[-1]) {
-        tax += (annual - cumulative[-1])*tax_pct[-1]
+    if (annual > cumulative[cumulative.length-1]) {
+        tax += (annual - cumulative[cumulative.length-1])*tax_pct[tax_pct.length-1]/100
     }
     return tax/12.
 }
