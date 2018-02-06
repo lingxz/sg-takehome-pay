@@ -34,8 +34,8 @@
 
 <div id='main'>
   <section class="section">
-    <h1 class="title">How much do I have to earn?</h1>
-    <p class="subtitle">Setting goals for you.</p>
+    <h1 class="title">How much do I have to make?</h1>
+    <p class="subtitle">Setting goals for you. Go back to <a href="index.html">Where did all the money go?</a></p>
 
     <form id="mainform">
       <label class="label" id="monthly-label">I want to take home this much (monthly) <a id="to-year">switch to yearly view</a></label>
@@ -96,12 +96,12 @@
     if (monthly) {
       formatted = `
         <h3 class="title is-2">To take home \$${sal}, you have to earn \$${res.total.toFixed(2)} monthly</h3>
-        <small class="has-text-grey-light">Last updated 05 Feb 2018, accurate to 1dp.</small>
+        <small class="has-text-grey-light">Last updated 05 Feb 2018</small>
       `;
     } else {
       formatted = `
         <h3 class="title is-2">To take home \$${sal}, you have to earn \$${(res.total*12).toFixed(2)} yearly</h3>
-        <small class="has-text-grey-light">Last updated 05 Feb 2018, accurate to 1dp</small>
+        <small class="has-text-grey-light">Last updated 05 Feb 2018</small>
       `;
     }
     return formatted
