@@ -106,3 +106,39 @@ function CPF(salary, age, additional_wage) {
     }
 }
 
+function approx_equal(n1, n2) {
+    if (n1 - n2 < 0.01 && n1 - n2 > -0.01) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+function getPayReversed(salary) {
+    salary = parseFloat(salary);
+    let start = salary;
+    let stop = salary * 1.3;
+    let middle;
+
+    let count = 0;
+    while (true) {
+        middle = start + (stop - start) / 2;
+        let results = getPay(middle)
+        let middle_res = results.take_home;
+        if (approx_equal(salary, middle_res)) {
+            return {
+                total: middle,
+                res: results,
+            }
+        }
+        if (salary < middle_res) {
+            stop = middle;
+        } else {
+            start = middle;
+        }
+        count++;
+        if (count === 100000) { // prevent infinite looping
+            break
+        }
+    }
+}

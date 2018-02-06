@@ -1,0 +1,112 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>No Money</title>
+  <meta name="description" content="Calculating how much the gahmen takes away">
+  <meta name="author" content="Lingyi Hu">
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css" />
+  <link rel="stylesheet" href="https://unpkg.com/bulmaswatch/lumen/bulmaswatch.min.css">
+
+  <style>
+    #main {
+      margin-top: 1em;
+      max-width: 700px;
+      margin: 0 auto;
+      font-family: monospace !important;
+    }
+    #result {
+      margin-top: 1em;
+      font-size: 1.2em;
+    }
+  </style>
+  <!--[if lt IE 9]>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.js"></script>
+  <![endif]-->
+</head>
+
+<body>
+
+
+<div id='main'>
+  <section class="section">
+    <h1 class="title">How much do I have to earn?</h1>
+    <p class="subtitle">Setting goals for you.</p>
+
+    <form id="mainform">
+      <label class="label" id="monthly-label">I want to take home this much (monthly) <a id="to-year">switch to yearly view</a></label>
+      <label class="label" id="yearly-label">I want to take home this much (yearly) <a id="to-month">switch to monthly view</a></label>
+      <input class="input" style="font-family: monospace;" type="number" placeholder="$$$" id='salary' required>
+      <input style="margin-top: 10px;font-family: monospace" class="button is-primary" type="submit" value="Calculate!">
+    </form>
+    <div id="result"></div>
+  </section>
+</div>
+
+<script
+  src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+  integrity="sha256-3edrmyuQ0w65f8gfBsqowzjJe2iM6n0nKciPUp8y+7E="
+  crossorigin="anonymous"></script>
+<script src="script.js"></script>
+<script>
+
+  let monthly = true;
+  $(document).ready(function() {
+    refreshYearMonthLabels();
+    $("#to-month").click(function() {
+      monthly = true;
+      refreshYearMonthLabels();
+    });
+    $("#to-year").click(function() {
+      monthly = false;
+      refreshYearMonthLabels();
+    });
+  })
+
+  function refreshYearMonthLabels() {
+    if (monthly) {
+      $("#monthly-label").show();
+      $("#yearly-label").hide();
+    } else {
+      $("#yearly-label").show();
+      $("#monthly-label").hide();
+    }
+  }
+
+  $('#mainform').submit(() => {
+    const input_sal = $('#salary').val();
+    const sal = parseInt(input_sal);
+    var res;
+    if (monthly) {
+      res = getPayReversed(sal);
+    } else {
+      res = getPayReversed(sal/12)
+    }
+    const formatted = format_res(res, sal);
+    $("div#result").html(formatted);
+    return false;
+  })
+
+  function format_res(res, sal) {
+    var formatted;
+    if (monthly) {
+      formatted = `
+        <h3 class="title is-2">To take home \$${sal}, you have to earn \$${res.total.toFixed(2)} monthly</h3>
+        <small class="has-text-grey-light">Last updated 05 Feb 2018, accurate to 1dp.</small>
+      `;
+    } else {
+      formatted = `
+        <h3 class="title is-2">To take home \$${sal}, you have to earn \$${(res.total*12).toFixed(2)} yearly</h3>
+        <small class="has-text-grey-light">Last updated 05 Feb 2018, accurate to 1dp</small>
+      `;
+    }
+    return formatted
+  }
+
+</script>
+</body>
+</html>
