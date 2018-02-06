@@ -103,6 +103,8 @@
         Employer contribution to CPF: \$${res.cpf.employer.toFixed(2)}<br/>
         <br/>
         You can voluntarily contribute <b>\$${res.cpf.possible_voluntary.toFixed(2)}</b> more to your CPF this year (but who wants to do that?)<br/>
+        <br/>
+        <small class="has-text-grey-light">Last updated 05 Feb 2018</small>
       `;
     } else {
       formatted = `
@@ -114,6 +116,8 @@
         Employer contribution to CPF: \$${(res.cpf.employer*12).toFixed(2)}<br/>
         <br/>
         You can voluntarily contribute <b>\$${res.cpf.possible_voluntary.toFixed(2)}</b> more to your CPF this year (but who wants to do that?)<br/>
+        <br/>
+        <small class="has-text-grey-light">Last updated 05 Feb 2018</small>
       `;
     }
     return formatted
