@@ -114,6 +114,8 @@ function approx_equal(n1, n2) {
     }
 }
 
+
+// binary search, not being used, using the mustMake function instead
 function getPayReversed(salary) {
     salary = parseFloat(salary);
     let start = salary;
@@ -141,4 +143,34 @@ function getPayReversed(salary) {
             break
         }
     }
+}
+
+function reverseTax(salary, age) {
+    let annual = salary * 12
+    if (annual < tax_brackets[0]) {
+        return 0;
+    }
+
+    let tax = 0;
+    let cumulative = [];
+
+    tax_brackets.reduce(function(a,b,i) { return cumulative[i] = a + b*(1 - tax_pct[i]/100); },0);
+
+    for (let i = 1; i < cumulative.length; i++) {
+        if (annual < cumulative[i]) {
+            var rem = annual - cumulative[i-1];
+            tax += rem * tax_pct[i]/(100 - tax_pct[i]);
+            break;
+        }
+        tax += tax_brackets[i] * tax_pct[i]/100;
+    }
+    if (annual > cumulative[cumulative.length-1]) {
+        tax += (annual - cumulative[cumulative.length-1]) * tax_pct[tax_pct.length-1]/(100 - tax_pct[tax_pct.length-1]);
+    }
+    return tax/12;
+}
+
+function mustMake(salary, age){
+ let postCPF = salary + reverseTax(salary, age);
+ return postCPF + Math.min(postCPF*0.25, 1200);
 }

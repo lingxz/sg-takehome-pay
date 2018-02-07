@@ -82,9 +82,9 @@
     const sal = parseInt(input_sal);
     var res;
     if (monthly) {
-      res = getPayReversed(sal);
+      res = mustMake(sal);
     } else {
-      res = getPayReversed(sal/12)
+      res = mustMake(sal/12)
     }
     const formatted = format_res(res, sal);
     $("div#result").html(formatted);
@@ -95,12 +95,12 @@
     var formatted;
     if (monthly) {
       formatted = `
-        <h3 class="title is-2">To take home \$${sal}, you have to earn \$${res.total.toFixed(2)} monthly</h3>
+        <h3 class="title is-2">To take home \$${sal}, you have to earn \$${res.toFixed(2)} monthly</h3>
         <small class="has-text-grey-light">Last updated 05 Feb 2018</small>
       `;
     } else {
       formatted = `
-        <h3 class="title is-2">To take home \$${sal}, you have to earn \$${(res.total*12).toFixed(2)} yearly</h3>
+        <h3 class="title is-2">To take home \$${sal}, you have to earn \$${(res*12).toFixed(2)} yearly</h3>
         <small class="has-text-grey-light">Last updated 05 Feb 2018</small>
       `;
     }
