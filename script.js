@@ -172,5 +172,5 @@ function reverseTax(salary, age) {
 
 function mustMake(salary, age){
  let postCPF = salary + reverseTax(salary, age);
- return postCPF + Math.min(postCPF*0.25, 1200);
+ return postCPF + Math.min( postCPF*c.employee_contrib/(1-c.employee_contrib) , c.ow_ceiling*c.employee_contrib );
 }
