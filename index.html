@@ -17,7 +17,7 @@
       margin-top: 1em;
       max-width: 700px;
       margin: 0 auto;
-      font-family: monospace !important;
+      /* font-family: monospace !important; */
     }
     #result {
       margin-top: 1em;
@@ -35,14 +35,22 @@
 <div id='main'>
   <section class="section">
     <h1 class="title">Where did all the money go?</h1>
-    <p class="subtitle">Calculating how much money the gahmen takes from you.</p>
+    <p class="subtitle">Calculating how much money the gahmen takes from you. <br/>NOT AN OFFICIAL SITE.</p>
 
     <form id="mainform">
+      <!-- salary -->
       <label class="label" id="monthly-label">Salary (monthly) <a id="to-year">switch to yearly view</a></label>
       <label class="label" style="display: none" id="yearly-label">Salary (yearly) <a id="to-month">switch to monthly view</a></label>
       <input class="input" style="font-family: monospace;" type="number" placeholder="$$$" id='salary' required>
+      
+      <!-- bonus -->
+      <label class="label" id="bonus-label">Bonus (yearly)</label>
+      <input class="input" style="font-family: monospace;" type="number" placeholder="$$$" id='bonus' value="0">
+
+      <!-- deductions -->
       <label class="label" id="deductions-label">Deductions (yearly)</label>
       <input class="input" style="font-family: monospace;" type="number" placeholder="$$$" id='deductions' value="0">
+
       <input style="margin-top: 10px;font-family: monospace" class="button is-primary" type="submit" value="Calculate!">
     </form>
     <div id="result"></div>
@@ -82,50 +90,42 @@
   $('#mainform').submit(() => {
     const input_sal = $('#salary').val();
     const input_deductions = $('#deductions').val();
+    const input_bonus = $('#bonus').val();
 
     var sal = parseInt(input_sal);
     const deductions = parseInt(input_deductions);
+    const bonus = parseInt(input_bonus);
 
     var res;
     if (monthly) {
       sal = sal * 12;
     }
-    res = getPay({salary: sal, deductions: deductions})
+    res = getPay({salary: sal, deductions: deductions, additional_wage: bonus})
     const formatted = format_res(res);
     $("div#result").html(formatted);
     return false;
   })
 
   function format_res(res) {
-    var formatted;
-    if (monthly) {
-      formatted = `
-        <h3 class="title is-2">Monthly take home pay: \$${(res.take_home/12).toFixed(2)} </h3>
-        CPF paid: \$${(res.cpf_paid/12).toFixed(2)}<br/>
-        Tax paid: \$${(res.tax_paid/12).toFixed(2)}<br/>
-        Effective tax rate: ${(res.effective_tax*100).toFixed(2)}%<br/>
-        Effective tax + CPF rate: ${(res.effective*100).toFixed(2)}%<br/>
-        Employer contribution to CPF: \$${res.cpf.employer.toFixed(2)/12}<br/>
-        <br/>
-        You can voluntarily contribute <b>\$${res.cpf.possible_voluntary.toFixed(2)}</b> more to your CPF this year (but who wants to do that?)<br/>
-        <br/>
-        <small class="has-text-grey-light">Last updated 05 Feb 2018</small>
-      `;
-    } else {
-      formatted = `
-        <h3 class="title is-2">Yearly take home pay: \$${(res.take_home).toFixed(2)} </h3>
-        CPF paid: \$${(res.cpf_paid).toFixed(2)}<br/>
-        Tax paid: \$${(res.tax_paid).toFixed(2)}<br/>
-        Effective tax rate: ${(res.effective_tax*100).toFixed(2)}%<br/>
-        Effective tax + CPF rate: ${(res.effective*100).toFixed(2)}%<br/>
-        Employer contribution to CPF: \$${(res.cpf.employer).toFixed(2)}<br/>
-        <br/>
-        You can voluntarily contribute <b>\$${res.cpf.possible_voluntary.toFixed(2)}</b> more to your CPF this year (but who wants to do that?)<br/>
-        <br/>
-        <small class="has-text-grey-light">Last updated 26 Dec 2022</small>
-      `;
-    }
-    return formatted
+    return `
+      <h3 class="title is-2">Yearly take home pay: \$${(res.take_home_post_tax).toFixed(2)} </h3>
+      Total income: \$${(res.total_income).toFixed(2)}<br/>
+      Employee CPF contribution: \$${(res.cpf.employee).toFixed(2)} (${res.cpf.explanation})<br/>
+      Employer CPF contribution: \$${(res.cpf.employer).toFixed(2)}<br/>
+      Tax payable: \$${(res.tax).toFixed(2)}<br/>
+      Chargeable income (income - deductions): \$${(res.chargeable_income).toFixed(2)}<br/>
+      Take home (yearly, pre-tax): \$${(res.take_home).toFixed(2)}<br/>
+      Take home (yearly, post-tax): \$${(res.take_home_post_tax).toFixed(2)}<br/>
+      Take home (monthly, pre-tax): \$${(res.monthly_take_home).toFixed(2)}<br/>
+      Bonus take home (pre-tax): \$${(res.bonus_take_home).toFixed(2)}<br/>
+      Effective tax rate (tax / total income): ${(res.effective_tax_total_income*100).toFixed(2)}%<br/>
+      Effective tax rate (tax / chargeable income): ${(res.effective_tax_chargeable_income*100).toFixed(2)}%<br/>
+      Effective tax + CPF rate ((tax + CPF) / total income): ${(res.effective*100).toFixed(2)}%<br/>
+      <br/>
+      You can voluntarily contribute <b>\$${res.cpf.possible_voluntary.toFixed(2)}</b> more to your CPF this year.<br/>
+      <br/>
+      <small class="has-text-grey-light">Last updated 26 Dec 2022</small>
+    `;
   }
 
 </script>

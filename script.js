@@ -16,28 +16,40 @@ const tax_pct = [0, 2, 3.5, 7, 11.5, 15, 18, 19, 19.5, 20, 22, 23, 24];
 
 function getPay({ salary, age, additional_wage, deductions } = {}) {
   // getPay assumes all inputs are on a yearly basis
+  // salary: base pay
+  // additional_wage: bonus
+  const total_income = salary + additional_wage;
   const cpf = CPF(salary, age, additional_wage);
-  const remaining = salary - cpf.employee;
-  const tax_paid = incomeTax(remaining, age, deductions);
-  const take_home = remaining - tax_paid;
-  const effective = 1 - take_home / salary;
-  const effective_tax = tax_paid / salary;
+  const chargeable_income = Math.max(total_income - deductions - cpf.employee, 0);
+  const tax = incomeTax(chargeable_income, age);
+  const take_home = total_income - cpf.employee; // pre-tax
+  const take_home_post_tax = take_home - tax;
+  const effective = 1 - take_home_post_tax / total_income; // effective tax + CPF
+  const effective_tax_total_income = tax / total_income;
+  const effective_tax_chargeable_income = tax / chargeable_income;
+
   return {
     cpf: cpf,
-    cpf_paid: cpf.employee,
-    tax_paid: tax_paid,
+    tax: tax,
     take_home: take_home,
+    take_home_post_tax: take_home_post_tax,
+    total_income: total_income,
+    chargeable_income: chargeable_income,
     effective: effective,
-    effective_tax: effective_tax,
+    effective_tax_total_income: effective_tax_total_income,
+    effective_tax_chargeable_income: effective_tax_chargeable_income,
+    // Monthly does not consider taxes
+    monthly_take_home: (salary - cpf.employee_ow) / 12,
+    bonus_take_home: additional_wage - cpf.employee_aw,
   };
 }
 
-function incomeTax(salary, age, deductions) {
+function incomeTax(annual, age) {
   /*
-  salary: annual salary
+  annual: annual chargeable salary
   deductions: annual deductions
   */
-  let annual = salary - deductions;
+
   if (annual < tax_brackets[0]) {
     return 0;
   }
@@ -72,47 +84,64 @@ function CPF(salary, age, additional_wage) {
   salary: annual salary
   additional_wage: annual additional wage
   */
-  var amt;
+  let exceeded_ow_ceiling = false;
+  let exceeded_aw_ceiling = false;
+
+  // ow: ordinary wage (base pay)
+  // aw: additional wage (bonus)
+  let cpfable_ow;
   const ow_ceiling = c.ow_monthly_ceiling * 12;
   if (salary > ow_ceiling) {
-    amt = ow_ceiling;
+    cpfable_ow = ow_ceiling;
+    exceeded_ow_ceiling = true;
   } else {
-    amt = salary;
+    cpfable_ow = salary;
   }
 
-  const employee = amt * c.employee_contrib;
-  const employer = amt * c.employer_contrib;
+  const employee_ow = cpfable_ow * c.employee_contrib;
+  const employer_ow = cpfable_ow * c.employer_contrib;
 
-  var employee_aw, employer_aw;
   if (additional_wage === undefined) {
     additional_wage = 0;
-    employee_aw = 0;
-    employer_aw = 0;
   }
 
-  const awc = c.aw_ceiling_param - amt;
-  var aw_cpfed;
-  if (additional_wage > awc) {
-    // fill this in
-    aw_cpfed = awc;
+  const aw_ceiling = c.aw_ceiling_param - cpfable_ow;
+  var cpfable_aw;
+  if (additional_wage > aw_ceiling) {
+    cpfable_aw = aw_ceiling;
+    exceeded_aw_ceiling = true;
   } else {
-    aw_cpfed = additional_wage;
+    cpfable_aw = additional_wage;
   }
-  employee_aw = aw_cpfed * c.employee_contrib;
-  employer_aw = aw_cpfed * c.employer_contrib;
+  const employee_aw = cpfable_aw * c.employee_contrib;
+  const employer_aw = cpfable_aw * c.employer_contrib;
 
-  const total_cpf_inflow = employee + employer + employee_aw + employer_aw;
+  const employee = employee_ow + employee_aw;
+  const employer = employer_ow + employer_aw;
+  const total_cpf_inflow = employee + employer;
   if (total_cpf_inflow > c.cpf_annual_limit) {
     throw "something is wrong! CPF exceeded the annual limit!";
+  }
+  
+  let explanation = "";
+  if (!exceeded_ow_ceiling && !exceeded_aw_ceiling) {
+    explanation += "Your salary and bonus are subject to 20% CPF"
+  } else {
+    const salary_amount = exceeded_ow_ceiling ? `\$${ow_ceiling}` : "all";
+    const bonus_amount = exceeded_aw_ceiling ? `\$${aw_ceiling}` : "all";
+    explanation += `${salary_amount} of your salary and ${bonus_amount} of your bonus are subject to 20% CPF`;
   }
 
   return {
     employee: employee,
     employer: employer,
+    employee_ow: employee_ow,
+    employer_ow: employer_ow,
     employee_aw: employee_aw,
     employer_aw: employer_aw,
     possible_voluntary: c.cpf_annual_limit - total_cpf_inflow,
     total_cpf_inflow: total_cpf_inflow,
+    explanation: explanation,
   };
 }
 
