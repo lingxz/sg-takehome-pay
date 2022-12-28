@@ -17,11 +17,23 @@
       margin-top: 1em;
       max-width: 700px;
       margin: 0 auto;
-      /* font-family: monospace !important; */
+      font-family: monospace !important;
     }
     #result {
       margin-top: 1em;
       font-size: 1.2em;
+    }
+    /* Hide arrows from number input */
+    /* Chrome, Safari, Edge, Opera */
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    /* Firefox */
+    input[type=number] {
+      -moz-appearance: textfield;
     }
   </style>
   <!--[if lt IE 9]>
@@ -35,7 +47,7 @@
 <div id='main'>
   <section class="section">
     <h1 class="title">Where did all the money go?</h1>
-    <p class="subtitle">Calculating how much money the gahmen takes from you. <br/>NOT AN OFFICIAL SITE.</p>
+    <p class="subtitle">Calculating how much money the gahmen takes from you. <br/><b>NOT AN OFFICIAL SITE.</b></p>
 
     <form id="mainform">
       <!-- salary -->
@@ -110,14 +122,14 @@
     return `
       <h3 class="title is-2">Yearly take home pay: \$${(res.take_home_post_tax).toFixed(2)} </h3>
       Total income: \$${(res.total_income).toFixed(2)}<br/>
-      Employee CPF contribution: \$${(res.cpf.employee).toFixed(2)} (${res.cpf.explanation})<br/>
-      Employer CPF contribution: \$${(res.cpf.employer).toFixed(2)}<br/>
-      Tax payable: \$${(res.tax).toFixed(2)}<br/>
-      Chargeable income (income - deductions): \$${(res.chargeable_income).toFixed(2)}<br/>
       Take home (yearly, pre-tax): \$${(res.take_home).toFixed(2)}<br/>
       Take home (yearly, post-tax): \$${(res.take_home_post_tax).toFixed(2)}<br/>
       Take home (monthly, pre-tax): \$${(res.monthly_take_home).toFixed(2)}<br/>
       Bonus take home (pre-tax): \$${(res.bonus_take_home).toFixed(2)}<br/>
+      Employee CPF contribution: \$${(res.cpf.employee).toFixed(2)} (${res.cpf.explanation})<br/>
+      Employer CPF contribution: \$${(res.cpf.employer).toFixed(2)}<br/>
+      Tax payable: \$${(res.tax).toFixed(2)}<br/>
+      Chargeable income (income - deductions): \$${(res.chargeable_income).toFixed(2)}<br/>
       Effective tax rate (tax / total income): ${(res.effective_tax_total_income*100).toFixed(2)}%<br/>
       Effective tax rate (tax / chargeable income): ${(res.effective_tax_chargeable_income*100).toFixed(2)}%<br/>
       Effective tax + CPF rate ((tax + CPF) / total income): ${(res.effective*100).toFixed(2)}%<br/>
